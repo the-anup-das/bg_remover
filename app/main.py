@@ -1,5 +1,4 @@
 import streamlit as st
-import cv2
 import numpy as np
 from utils import webcam, upload_image, before_after, apply_selfie_segmentation
 from PIL import Image, ImageEnhance
