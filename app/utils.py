@@ -4,8 +4,8 @@ import numpy as np
 from PIL import Image, ImageEnhance
 
 import streamlit.components as stc
-import base64
-import time
+
+import mediapipe as mp
 
 # class FileDownloader(object):
 	
@@ -66,3 +66,32 @@ def upload_image():
 
         return image_file
 
+def before_after(before_image, after_image):
+    col1, col2 = st.columns([0.5, 0.5])
+
+    with col1:
+        st.markdown('<p style="text-align: center;">Before</p>', unsafe_allow_html = True)
+        st.image(before_image, width = 300)
+
+    with col2:
+        st.markdown('<p style = "text-align: center;">After</p>', unsafe_allow_html = True)
+        st.image(after_image, width = 300)
+
+def apply_selfie_segmentation(input_image):
+    mp_selfie = mp.solutions.selfie_segmentation
+
+    model =  mp_selfie.SelfieSegmentation(model_selection = 0 )
+        
+    #apply segmentation
+    image = Image.open(input_image)
+
+    converted_img = np.array(image.convert('RGB'))
+    input_image_converted = cv2.cvtColor(converted_img, cv2.COLOR_BGR2RGB)
+    res = model.process(input_image_converted)
+
+    background = np.zeros(input_image_converted.shape, dtype = np.uint8)
+    mask = np.stack((res.segmentation_mask,)*3, axis=-1) > 0.9 
+    segmented_image = np.where(mask, converted_img, background)
+
+    # output_image = cv2.open(segmented_image)
+    return segmented_image
