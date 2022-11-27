@@ -11,7 +11,7 @@ def main():
     st.title("Remove Background")
 
     path = os.path.dirname(__file__)
-    icon = path+'\\assets\\icon.png'
+    icon = path+'/assets/icon.png'
     print(icon)
 
     image = Image.open(icon)
