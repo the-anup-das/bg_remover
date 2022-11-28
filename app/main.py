@@ -65,7 +65,7 @@ def main():
                     # download = FileDownloader(uploaded_img).download()
                     # with open("flower.png", "rb") as file:
 
-                    segmented_image = apply_selfie_segmentation(uploaded_img, 1)
+                    segmented_image = apply_selfie_segmentation(uploaded_img)
                     # im = Image.fromarray(segmented_image,"RGB")
 
                     before_after(uploaded_img,segmented_image)
@@ -100,7 +100,7 @@ def main():
                 if st.button("Change Background"):
                     uploaded_img = upload_image()
                     
-                    segmented_image = apply_selfie_segmentation(uploaded_img, 2, uploaded_img)
+                    segmented_image = apply_selfie_segmentation(uploaded_img)
 
                     pass
 
