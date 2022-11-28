@@ -43,32 +43,39 @@ def main():
     # Add a header and expander in side bar
     st.sidebar.markdown('<p class="font">Remove backgrounds</p>', unsafe_allow_html=True)
 
-    menu = ['Upload Image','Use Webcam','About']
+    menu = ['Upload Image','Use Webcam']
     choice = st.sidebar.selectbox('Menu', menu)
 
-    with st.sidebar.expander("About the App"):
-        st.write("""
-            Simple app created by Anup Das as a side project
-             to learn Streamlit and computer vision. Hope you enjoy!
-        """)
+
 
     if choice == 'Upload Image':
         st.subheader("Upload Image")
         uploaded_img = upload_image()
 
+        global output_image
+        global output_image_file
+
+        show_output = 0
+
         col1, col2 = st.columns([0.3, 0.7])
 
         if uploaded_img:
             with col1:
-                if st.button("Remove Background"):
+                remove_bg_btn = st.button("Remove Background")
+
+                # Initialize session state
+                if "load_state" not in st.session_state:
+                    st.session_state.load_state = False
+
+                if remove_bg_btn or st.session_state.load_state:
+                    st.session_state.load_state = True
                     # st.write(my_text)
                     # download = FileDownloader(uploaded_img).download()
                     # with open("flower.png", "rb") as file:
 
                     segmented_image = apply_selfie_segmentation(uploaded_img)
                     # im = Image.fromarray(segmented_image,"RGB")
-
-                    before_after(uploaded_img,segmented_image)
+                    output_image = segmented_image
                     # print(type(im))
                     im = Image.fromarray(segmented_image)
 
@@ -87,14 +94,10 @@ def main():
 
                     img.save("Edge.png")
 
-                    st.success("File ready to download")
-                    with open("Edge.png", "rb") as file:
-                        btn = st.download_button(
-                                        label="Download Output",
-                                        data=file,
-                                        file_name=uploaded_img.name,
-                                        mime="image/png"
-                                    )
+                    output_image_file = open("Edge.png", "rb") 
+
+                    show_output = 1
+
                     # Delete edge.png
             with col2:
                 if st.button("Change Background"):
@@ -102,7 +105,18 @@ def main():
                     
                     segmented_image = apply_selfie_segmentation(uploaded_img)
 
-                    pass
+
+            # Download & showing output
+            if show_output == 1: 
+                before_after(uploaded_img,output_image)
+                st.success("File ready to download")
+                btn = st.download_button(
+                                            label="Download Output",
+                                            data=output_image_file,
+                                            file_name=uploaded_img.name,
+                                            mime="image/png"
+                                        )
+                show_output = 0
 
     elif choice == 'Use Webcam':
         st.subheader("Capture a Image using webcam")
@@ -115,8 +129,12 @@ def main():
                         mime="image/png"
                     )
 
-    elif choice == 'About':
-        st.subheader("About page")
+    
+    with st.sidebar.expander("About the App"):
+        st.write("""
+            Simple app created by Anup Das as a side project
+             to learn Streamlit and computer vision. Hope you enjoy!
+        """)
 
 if __name__ == '__main__':
     main()

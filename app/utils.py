@@ -91,10 +91,13 @@ def apply_selfie_segmentation(input_image):
 
     background = np.zeros(input_image_converted.shape, dtype = np.uint8)
 
-    mask = np.stack((res.segmentation_mask,)*3, axis=-1) > 0.9 
+    threshold = st.sidebar.slider('Adjust the threshold',1,100,50, step = 1)
+
+    mask = np.stack((res.segmentation_mask,)*3, axis=-1) > (threshold/100) 
     segmented_image = np.where(mask, converted_img, background)
 
-    # output_image = cv2.open(segmented_image)
+
+
     return segmented_image
 
 def replace_background(input_image, bg_image):
