@@ -90,8 +90,12 @@ def apply_selfie_segmentation(input_image):
     res = model.process(input_image_converted)
 
     background = np.zeros(input_image_converted.shape, dtype = np.uint8)
+
     mask = np.stack((res.segmentation_mask,)*3, axis=-1) > 0.9 
     segmented_image = np.where(mask, converted_img, background)
 
     # output_image = cv2.open(segmented_image)
     return segmented_image
+
+def replace_background(input_image, bg_image):
+    change_bg_mp = mp.solutions.selfie_
